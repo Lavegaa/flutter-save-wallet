@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:savewallet/presentation/item_list_page/item_list_view.dart';
 import 'package:savewallet/presentation/scan_page/text_detector_view.dart';
 
 class ScanPage extends StatelessWidget {
@@ -6,10 +7,19 @@ class ScanPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: TextRecognizerView(),
+        child: Column(
+          children: [
+            const Expanded(
+              flex: 2,
+              child: TextRecognizerView(),
+            ),
+            Expanded(
+              flex: 1,
+              child: ItemListView(),
+            ),
+            ],
         )
       ),
     );

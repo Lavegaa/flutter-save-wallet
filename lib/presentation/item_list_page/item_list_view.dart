@@ -16,39 +16,34 @@ class ItemListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          "ItemListTestPage",
-          style: TextStyle(
-            fontSize: 24,
-          ),
-        ),
-      ),
-      body: Center(
-        child: Column(children: [
-          ItemListTextField(myText: myText),
-          ItemListTextField(myText: myText1),
-          ItemListTextField(myText: myText2),
-          const SizedBox(
-            height: 100,
-          ),
-          OutlinedButton(
-            clipBehavior: Clip.hardEdge,
-            onPressed: () {
-              //TODO : 후처리 후 버튼 클릭 결과 합쳐서 스크린 결과화면 출력
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ResultScreen(
-                    //결과보내기?
-                    text: myText.text + myText1.text + myText2.text,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Column(children: [
+            ItemListTextField(myText: myText, labelText: '상품명',),
+            ItemListTextField(myText: myText1, labelText: '가격',),
+            ItemListTextField(myText: myText2, labelText: '수량',),
+            const SizedBox(
+              height: 30,
+            ),
+            OutlinedButton(
+              clipBehavior: Clip.hardEdge,
+              onPressed: () {
+                //TODO : 후처리 후 버튼 클릭 결과 합쳐서 스크린 결과화면 출력
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResultScreen(
+                      //결과보내기?
+                      text: myText.text + myText1.text + myText2.text,
+                    ),
                   ),
-                ),
-              );
-            },
-            child: const Text("결과보기"),
-          )
-        ]),
+                );
+              },
+              child: const Text("결과보기"),
+            )
+          ]),
+        ),
       ),
     );
   }
@@ -58,19 +53,20 @@ class ItemListTextField extends StatelessWidget {
   const ItemListTextField({
     super.key,
     required this.myText,
+    required this.labelText,
   });
-
+  final String labelText;
   final TextEditingController myText;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 50),
+        const SizedBox(height: 20),
         TextField(
           controller: myText,
-          decoration: const InputDecoration(
-            labelText: 'String',
+          decoration: InputDecoration(
+            labelText: labelText,
             hintText: 'Fix your Text',
             labelStyle: TextStyle(color: Colors.redAccent),
             focusedBorder: OutlineInputBorder(
