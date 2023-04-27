@@ -26,12 +26,10 @@ class _InputViewState extends State<InputView> {
 
   @override
   void initState() {
-    // TODO: implement initState
     processImage(widget.image);
     super.initState();
   }
 
-  //TODO - recognizedText 받아오기
   final TextEditingController myText = TextEditingController(text: "배고파피자먹고싶어");
 
   final TextEditingController myText1 =
@@ -40,7 +38,6 @@ class _InputViewState extends State<InputView> {
   final TextEditingController myText2 =
       TextEditingController(text: "배고파육회먹고싶어");
 
-  //TODO - 결과 후처리?
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +94,6 @@ class _InputViewState extends State<InputView> {
     final recognizedText = await _textRecognizer.processImage(inputImage);
 
     _text = 'Recognized text:\n\n${recognizedText.text}';
-    // TODO: set _customPaint to draw boundingRect on top of image
     print('result:      ' + _text!);
     recognizedText.blocks
         .forEach((element) => print('result:      ' + element.text));

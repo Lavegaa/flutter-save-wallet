@@ -74,7 +74,7 @@ class _CameraScreenState extends State<CameraScreen> {
             padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () => takePicture(true),
-              child: Icon(Icons.photo_library_outlined),
+              child: const Icon(Icons.photo_library_outlined),
             ),
           ),
         ],
