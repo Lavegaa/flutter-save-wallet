@@ -10,12 +10,43 @@ class InputView extends StatefulWidget {
   State<InputView> createState() => _InputViewState();
 }
 
+class TAG_TYPE {
+  static const String SINGLE = 'SINGLE';
+  static const String SINGLE_SOLDOUT = 'SINGLE_SOLDOUT';
+  static const String SINGLE_SALE = 'SINGLE_SALE';
+  static const String MULTI = 'MULTI';
+}
+
 class _InputViewState extends State<InputView> {
   final TextRecognizer _textRecognizer =
       TextRecognizer(script: TextRecognitionScript.korean);
   bool _canProcess = true;
   bool _isBusy = false;
   String? _text;
+
+  final Map<String, Map<String, dynamic>> TAG_TYPES = {
+    TAG_TYPE.SINGLE: {
+      'length': 6,
+      'nameIndex': 0,
+      'priceIndex': 4,
+    },
+    TAG_TYPE.SINGLE_SOLDOUT: {
+      'length': 7,
+      'nameIndex': 1,
+      'priceIndex': 6,
+    },
+    TAG_TYPE.SINGLE_SALE: {
+      'length': 10,
+      'nameIndex': 5,
+      'priceIndex': 9,
+    },
+    // 이거 좀 쉽지않은데
+    TAG_TYPE.MULTI: {
+      'length': 8,
+      'nameIndex': 0,
+      'priceIndex': 4,
+    },
+  };
 
   @override
   void dispose() async {
@@ -30,13 +61,12 @@ class _InputViewState extends State<InputView> {
     super.initState();
   }
 
-  final TextEditingController myText = TextEditingController(text: "배고파피자먹고싶어");
+  late final TextEditingController itemName = TextEditingController(text: "");
 
-  final TextEditingController myText1 =
-      TextEditingController(text: "배고파치킨먹고싶어");
+  late final TextEditingController itemPrice = TextEditingController(text: "");
 
-  final TextEditingController myText2 =
-      TextEditingController(text: "배고파육회먹고싶어");
+  late final TextEditingController itemAmount =
+      TextEditingController(text: "1");
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +78,15 @@ class _InputViewState extends State<InputView> {
           // ignore: prefer_const_literals_to_create_immutables
           child: Column(children: [
             ItemListTextField(
-              myText: myText,
+              textValue: itemName,
               labelText: '상품명',
             ),
             ItemListTextField(
-              myText: myText1,
+              textValue: itemPrice,
               labelText: '가격',
             ),
             ItemListTextField(
-              myText: myText2,
+              textValue: itemAmount,
               labelText: '수량',
             ),
             const SizedBox(
@@ -71,7 +101,7 @@ class _InputViewState extends State<InputView> {
                   MaterialPageRoute(
                     builder: (context) => ResultScreen(
                       //결과보내기?
-                      text: myText.text + myText1.text + myText2.text,
+                      text: itemName.text + itemPrice.text + itemAmount.text,
                     ),
                   ),
                 );
@@ -95,24 +125,75 @@ class _InputViewState extends State<InputView> {
 
     _text = 'Recognized text:\n\n${recognizedText.text}';
     print('result:      ' + _text!);
-    recognizedText.blocks
-        .forEach((element) => print('result:      ' + element.text));
-
+    List<String> textList = recognizedText.blocks.map((e) => e.text).toList();
+    print('textList:  ${textList}');
+    // tag추론
+    Map<String, dynamic> tag = estimateTag(textList);
+    // tag에 따라 상품명, 가격, 수량 추론
+    Map<String, dynamic> itemInfo = estimateItemInfo(textList, tag);
+    itemName.text = itemInfo['name'];
+    itemPrice.text = itemInfo['price'];
+    // 가격 추출
+    // List<String> priceList = detectPrice(textList);
     _isBusy = false;
     if (mounted) {
       setState(() {});
     }
+  }
+
+  List<String> detectPrice(List<String> textList) {
+    RegExp exp = RegExp(r'^[\d,]+$');
+    List<String>? priceTextList = [];
+    for (String text in textList) {
+      if (exp.hasMatch(text)) {
+        priceTextList.add(text);
+      }
+    }
+    return priceTextList;
+  }
+
+  /// 아주 기초적인 추론 방법
+  /// textList를 받아서 length에 따라 tag를 추론하는 함수
+  /// tag추론 방법을 더 강화해야함.
+  /// 현재는 단순 배열의 길이로만 판단.
+  /// 추후에는 가격과 단위당 가격 및 단위를 이용하여 추론해야함.
+  /// 세일 잘라내기 등등 구분 필요 아이디어 더 필요함.
+  /// 솔직히 저런것들보단 자연어 처리가 맞지 않나 생각이 들기도 함;;
+
+  Map<String, dynamic> estimateTag(List<String> textList) {
+    switch (textList.length) {
+      case 6:
+        return TAG_TYPES[TAG_TYPE.SINGLE]!;
+      case 7:
+        return TAG_TYPES[TAG_TYPE.SINGLE_SOLDOUT]!;
+      case 10:
+        return TAG_TYPES[TAG_TYPE.SINGLE_SALE]!;
+      case 8:
+        return TAG_TYPES[TAG_TYPE.MULTI]!;
+      default:
+        return TAG_TYPES[TAG_TYPE.SINGLE]!;
+    }
+  }
+
+  // textList를 받아서 tag에 따라 상품명, 가격, 수량을 추론하는 함수
+  Map<String, dynamic> estimateItemInfo(
+      List<String> textList, Map<String, dynamic> tag) {
+    Map<String, dynamic> itemInfo = {};
+    itemInfo['name'] = textList[tag['nameIndex']];
+    itemInfo['price'] = textList[tag['priceIndex']];
+    // itemInfo['quantity'] = textList[tag['length'] - 1];
+    return itemInfo;
   }
 }
 
 class ItemListTextField extends StatelessWidget {
   const ItemListTextField({
     super.key,
-    required this.myText,
+    required this.textValue,
     required this.labelText,
   });
   final String labelText;
-  final TextEditingController myText;
+  final TextEditingController textValue;
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +201,7 @@ class ItemListTextField extends StatelessWidget {
       children: [
         const SizedBox(height: 20),
         TextField(
-          controller: myText,
+          controller: textValue,
           decoration: InputDecoration(
             labelText: labelText,
             hintText: 'Fix your Text',
