@@ -1,9 +1,8 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-
 import '../../model/product_model/product_model.dart';
 
+//url 수정
 class ApiService {
   static const String baseUrl =
       "https://webtoon-crawler.nomadcoders.workers.dev";

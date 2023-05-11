@@ -1,89 +1,95 @@
 import 'package:flutter/material.dart';
-import 'package:savewallet/presentation/item_list_page/result_screen.dart';
+import '../../domain/search/ApiService.dart';
+import '../../model/product_model/product_model.dart';
+import '../../widgets/product_widget.dart';
 
 class ItemListView extends StatelessWidget {
-  ItemListView({super.key});
+  final String title;
+  final String price;
 
-  //TODO - recognizedText 받아오기
-  final TextEditingController myText = TextEditingController(text: "배고파피자먹고싶어");
-  final TextEditingController myText1 =
-      TextEditingController(text: "배고파치킨먹고싶어");
-  final TextEditingController myText2 =
-      TextEditingController(text: "배고파육회먹고싶어");
-  //TODO - 결과 후처리?
+  ItemListView({
+    Key? key,
+    required this.title,
+    required this.price,
+  }) : super(key: key);
+
+  //TODO : api로 상품 받아오기
+  final Future<List<ProductModel>> products = ApiService.getProduct();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(children: [
-            ItemListTextField(myText: myText, labelText: '상품명',),
-            ItemListTextField(myText: myText1, labelText: '가격',),
-            ItemListTextField(myText: myText2, labelText: '수량',),
-            const SizedBox(
-              height: 30,
+      appBar: AppBar(
+        elevation: 2,
+        foregroundColor: Colors.black.withOpacity(0.8),
+        backgroundColor: Colors.purple.shade50,
+        title: const Row(
+          children: [
+            Icon(
+              Icons.manage_search,
+              size: 45,
             ),
-            OutlinedButton(
-              clipBehavior: Clip.hardEdge,
-              onPressed: () {
-                //TODO : 후처리 후 버튼 클릭 결과 합쳐서 스크린 결과화면 출력
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ResultScreen(
-                      //결과보내기?
-                      text: myText.text + myText1.text + myText2.text,
-                    ),
-                  ),
-                );
-              },
-              child: const Text("결과보기"),
-            )
-          ]),
+            SizedBox(
+              width: 15,
+            ),
+            Text(
+              "결과보기",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ),
       ),
+      body: Text(title + price),
+      //작성 후
+
+      //  FutureBuilder(
+      //   future: products,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.hasData) {
+      //       return Column(
+      //         children: [
+      //           const SizedBox(
+      //             height: 50,
+      //           ),
+      //           //Expanded(child: makeList(snapshot))
+
+      //         ],
+      //       );
+      //     }
+      //     return const Center(
+      //       child: CircularProgressIndicator(),
+      //     );
+      //   },
+      // ),
     );
   }
-}
 
-class ItemListTextField extends StatelessWidget {
-  const ItemListTextField({
-    super.key,
-    required this.myText,
-    required this.labelText,
-  });
-  final String labelText;
-  final TextEditingController myText;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 20),
-        TextField(
-          controller: myText,
-          decoration: InputDecoration(
-            labelText: labelText,
-            hintText: 'Fix your Text',
-            labelStyle: TextStyle(color: Colors.redAccent),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              borderSide: BorderSide(width: 2, color: Colors.blueAccent),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              borderSide: BorderSide(width: 1, color: Colors.redAccent),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            ),
-          ),
-          keyboardType: TextInputType.text,
-        ),
-      ],
+//TODO : 상품 나열
+  ListView makeList(AsyncSnapshot<List<ProductModel>> snapshot) {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: snapshot.data!.length,
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 20,
+      ),
+      itemBuilder: (context, index) {
+        var product = snapshot.data![index];
+        return Product(
+          title: product.title,
+          price: product.price,
+          image: product.image,
+          link: product.link,
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(
+        width: 40,
+      ),
     );
   }
 }
