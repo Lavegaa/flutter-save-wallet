@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/search/ApiService.dart';
+import '../../domain/search/repositories/SearchRepository.dart';
 import '../../model/product_model/product_model.dart';
 import '../../widgets/product_widget.dart';
 
@@ -14,7 +14,8 @@ class ItemListView extends StatelessWidget {
   }) : super(key: key);
 
   //TODO : api로 상품 받아오기
-  final Future<List<ProductModel>> products = ApiService.getProduct();
+  final Future<List<ProductModel>> products =
+      SearchRepository.getProductList(title);
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +24,8 @@ class ItemListView extends StatelessWidget {
         elevation: 2,
         foregroundColor: Colors.black.withOpacity(0.8),
         backgroundColor: Colors.purple.shade50,
-        title: const Row(
-          children: [
+        title: Row(
+          children: const [
             Icon(
               Icons.manage_search,
               size: 45,
@@ -44,28 +45,24 @@ class ItemListView extends StatelessWidget {
           ],
         ),
       ),
-      body: Text(title + price),
-      //작성 후
-
-      //  FutureBuilder(
-      //   future: products,
-      //   builder: (context, snapshot) {
-      //     if (snapshot.hasData) {
-      //       return Column(
-      //         children: [
-      //           const SizedBox(
-      //             height: 50,
-      //           ),
-      //           //Expanded(child: makeList(snapshot))
-
-      //         ],
-      //       );
-      //     }
-      //     return const Center(
-      //       child: CircularProgressIndicator(),
-      //     );
-      //   },
-      // ),
+      body: FutureBuilder(
+        future: products,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                //Expanded(child: makeList(snapshot))
+              ],
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
     );
   }
 

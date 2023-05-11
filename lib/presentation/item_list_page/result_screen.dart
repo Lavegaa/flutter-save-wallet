@@ -28,8 +28,8 @@ class _ResultScreenState extends State<ResultScreen> {
         elevation: 2,
         foregroundColor: Colors.black.withOpacity(0.8),
         backgroundColor: Colors.purple.shade50,
-        title: const Row(
-          children: [
+        title: Row(
+          children: const [
             Icon(
               Icons.camera_alt_outlined,
               size: 45,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:savewallet/presentation/item_list_page/result_screen.dart';
+import '../item_list_page/item_list_view.dart';
 
 class InputView extends StatefulWidget {
   final InputImage image;
@@ -68,6 +69,10 @@ class _InputViewState extends State<InputView> {
   late final TextEditingController itemAmount =
       TextEditingController(text: "1");
 
+  bool _isCheckTitle = true;
+
+  bool _isCheckPrice = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,9 +82,25 @@ class _InputViewState extends State<InputView> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           // ignore: prefer_const_literals_to_create_immutables
           child: Column(children: [
+            Checkbox(
+              value: _isCheckTitle,
+              onChanged: (value) {
+                setState(() {
+                  _isCheckTitle = value!;
+                });
+              },
+            ),
             ItemListTextField(
               textValue: itemName,
               labelText: '상품명',
+            ),
+            Checkbox(
+              value: _isCheckPrice,
+              onChanged: (value) {
+                setState(() {
+                  _isCheckPrice = value!;
+                });
+              },
             ),
             ItemListTextField(
               textValue: itemPrice,
@@ -95,13 +116,12 @@ class _InputViewState extends State<InputView> {
             OutlinedButton(
               clipBehavior: Clip.hardEdge,
               onPressed: () {
-                //TODO : 후처리 후 버튼 클릭 결과 합쳐서 스크린 결과화면 출력
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ResultScreen(
-                      //결과보내기?
-                      text: itemName.text + itemPrice.text + itemAmount.text,
+                    builder: (context) => ItemListView(
+                      title: _isCheckTitle ? itemName.text : "",
+                      price: _isCheckPrice ? itemPrice.text : "",
                     ),
                   ),
                 );
