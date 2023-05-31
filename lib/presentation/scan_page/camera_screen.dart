@@ -21,6 +21,8 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late List<CameraDescription> cameras;
+  static double overlay_width = 300;
+  static double overlay_height = 200;
   bool _isCameraInitialized = false;
   ImagePicker? _imagePicker;
   GlobalKey _previewContainerKey = GlobalKey();
@@ -42,64 +44,40 @@ class _CameraScreenState extends State<CameraScreen> {
     });
   }
 
-  Future<File?> _captureImage() async {
+  Future<File?> _captureImage(Rect rect) async {
     if (!_controller.value.isInitialized) {
       return null;
     }
 
     try {
-      // CameraController로 이미지 캡처
-      // final imageBytes = await _controller.takePicture();
       final XFile imageFile = await _controller.takePicture();
-      // // Image 객체로 변환
-      // final capturedImage =
-      //     img.decodeImage(imageBytes.readAsBytes() as Uint8List);
 
-      // // 현재 화면 크기
-      // final RenderBox? renderBox =
-      //     _previewContainerKey.currentContext?.findRenderObject() as RenderBox?;
-      // if (renderBox == null) {
-      //   return null;
-      // }
-      // final size = renderBox.size;
-
-      // // 사각형 부분 자르기
-      // final rect = Rect.fromCenter(
-      //   center: Offset(size.width / 2, size.height / 2),
-      //   width: 200, // 원하는 가운데 사각형의 너비
-      //   height: 200, // 원하는 가운데 사각형의 높이
-      // );
-
-      // final croppedImage = img.copyCrop(capturedImage!,
-      //     x: rect.left.toInt(),
-      //     y: rect.top.toInt(),
-      //     width: rect.width.toInt(),
-      //     height: rect.height.toInt());
-
-      // // Image 객체를 ui.Image로 변환
-      // final capturedUiImage = await _convertImageToUiImage(croppedImage);
-      //
-      // 이미지를 읽어들이고 가운데 200x200 크기로 자름
       final img.Image? capturedImage =
           img.decodeImage(File(imageFile.path).readAsBytesSync());
-      final RenderBox? renderBox =
-          _previewContainerKey.currentContext?.findRenderObject() as RenderBox?;
-      if (renderBox == null) {
-        return null;
-      }
-      final size = renderBox.size;
-      final rect = Rect.fromCenter(
-        center: Offset(size.width / 2, size.height / 2),
-        width: 200, // 원하는 가운데 사각형의 너비
-        height: 200, // 원하는 가운데 사각형의 높이
+
+      final imageSize = Size(
+          capturedImage!.width.toDouble(), capturedImage!.height.toDouble());
+
+      final screenSize = MediaQuery.of(context).size;
+      final appBarHeight = AppBar().preferredSize.height;
+
+      final widthRatio = imageSize.width / screenSize.width;
+      final heightRatio = imageSize.height / (screenSize.height - appBarHeight);
+
+      final transformedRect = Rect.fromLTRB(
+        rect.left * widthRatio,
+        rect.top * heightRatio,
+        rect.right * widthRatio,
+        rect.bottom * heightRatio,
       );
 
-      final croppedImage = img.copyCrop(capturedImage!,
-          x: rect.left.toInt(),
-          y: rect.top.toInt(),
-          width: rect.width.toInt(),
-          height: rect.height.toInt()); // x, y, width, height는 필요에 따라 조정
-
+      final croppedImage = img.copyCrop(
+        capturedImage!,
+        x: transformedRect.left.toInt(),
+        y: transformedRect.top.toInt(),
+        width: transformedRect.width.toInt(),
+        height: transformedRect.height.toInt(),
+      );
       // 자른 이미지를 파일로 저장
       final String imagePath = (await getTemporaryDirectory()).path;
       final String fileName = 'cropped_image.jpg'; // 파일 이름 지정
@@ -113,15 +91,14 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  void takePicture(bool isGallery) async {
+  void takePicture(bool isGallery, Rect rect) async {
     try {
       final image;
       if (isGallery) {
         image = await _imagePicker?.pickImage(source: ImageSource.gallery);
       } else {
         print('capture start!!!!');
-        image = await _captureImage();
-        print('image:    ' + image);
+        image = await _captureImage(rect);
       }
       final inputImage = InputImage.fromFilePath(image.path);
       Navigator.push(
@@ -133,6 +110,7 @@ class _CameraScreenState extends State<CameraScreen> {
       );
     } catch (e) {
       // 에러 처리 로직
+      print('error!!!!!!!!!!!!!!' + e.toString());
     }
   }
 
@@ -146,6 +124,13 @@ class _CameraScreenState extends State<CameraScreen> {
 
     final Size size = MediaQuery.of(context).size;
     final double cameraAspectRatio = _controller.value.aspectRatio;
+    final appBarHeight = AppBar().preferredSize.height;
+
+    final rect = Rect.fromCenter(
+      center: Offset(size.width / 2, (size.height - appBarHeight) / 2),
+      width: _CameraScreenState.overlay_width, // 원하는 가운데 사각형의 너비
+      height: _CameraScreenState.overlay_height, // 원하는 가운데 사각형의 높이
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -154,7 +139,7 @@ class _CameraScreenState extends State<CameraScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
-              onTap: () => takePicture(true),
+              onTap: () => takePicture(true, rect),
               child: const Icon(Icons.photo_library_outlined),
             ),
           ),
@@ -166,23 +151,34 @@ class _CameraScreenState extends State<CameraScreen> {
         child: AspectRatio(
           aspectRatio:
               cameraAspectRatio > 1 ? cameraAspectRatio : 1 / cameraAspectRatio,
-          child: Stack(
-            children: [
-              Container(
-                color: Colors.blue, // 배경 색상 예시
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              CustomPaint(
-                painter: MyCustomPainter(),
-                child: CameraPreview(_controller),
-              ),
-            ],
+          child: FutureBuilder<void>(
+            future: _controller.initialize(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Stack(
+                      children: [
+                        SizedBox.expand(
+                          child: CameraPreview(_controller), // 카메라 미리보기
+                        ),
+                        SizedBox.expand(
+                          child: cameraOverlay(
+                              color: Color(0x55000000), rect: rect),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => takePicture(false),
+        onPressed: () => takePicture(false, rect),
         child: const Icon(Icons.camera),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -196,26 +192,55 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 }
 
-class MyCustomPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    // 배경을 검은색으로 그리기
-    final backgroundPaint = Paint()..color = Colors.black;
-    canvas.drawRect(
-        Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
+Widget cameraOverlay({required Color color, required Rect rect}) {
+  return Container(
+    color: Colors.transparent,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        double horizontalPadding;
+        double verticalPadding;
 
-    // 중앙의 200x200 영역을 뚫어서 배경이 보이도록 그리기
-    final holePaint = Paint()..blendMode = BlendMode.clear;
-    final holeRect = Rect.fromCenter(
-      center: Offset(size.width / 2, size.height / 2),
-      width: 200,
-      height: 200,
-    );
-    canvas.drawRect(holeRect, holePaint);
-  }
+        horizontalPadding = rect.left;
+        verticalPadding = rect.top;
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-  }
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: horizontalPadding,
+                color: color,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                width: horizontalPadding,
+                color: color,
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                margin: EdgeInsets.only(
+                    left: horizontalPadding, right: horizontalPadding),
+                height: verticalPadding,
+                color: color,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.only(
+                    left: horizontalPadding, right: horizontalPadding),
+                height: verticalPadding,
+                color: color,
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  );
 }

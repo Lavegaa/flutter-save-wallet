@@ -17,7 +17,7 @@ class ResultView extends StatelessWidget {
           flex: 1,
           child: Image.file(
             File(image),
-            fit: BoxFit.fitWidth,
+            // fit: BoxFit.fitWidth,
             width: double.infinity,
             height: double.infinity,
           ),
