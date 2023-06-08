@@ -1,11 +1,14 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+// import 'package:savewallet/presentation/item_list_page/result_screen.dart';
 import 'package:savewallet/presentation/scan_page/camera_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   cameras = await availableCameras();
   runApp(const MyApp());

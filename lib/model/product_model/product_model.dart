@@ -90,9 +90,9 @@
 // Map get glossaryData => _$glossaryDataJsonLiteral;
 
 class ProductModel {
-  final String brand, title, amount, price, image, link;
+  final dynamic brand, title, amount, price, image, link;
 
-  ProductModel.fromJson(Map<String, dynamic> json)
+  ProductModel.fromJson(Map<dynamic, dynamic> json)
       : brand = json['brand'],
         title = json['title'],
         amount = json['amount'],
