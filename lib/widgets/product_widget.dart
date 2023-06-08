@@ -74,7 +74,7 @@ class Product extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.blue.shade500,
                   ),
-                  child: const Padding(
+                  child: Padding(
                     padding: EdgeInsets.symmetric(
                       vertical: 10,
                       horizontal: 20,
