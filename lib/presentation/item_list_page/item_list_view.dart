@@ -13,9 +13,9 @@ class ItemListView extends StatelessWidget {
     required this.price,
   }) : super(key: key);
 
-  //TODO : api로 상품 받아오기
+  //TODO : title넣기?...? final이라 안됨?
   final Future<List<ProductModel>> products =
-      SearchRepository.getProductList(title);
+      SearchRepository.getProductList("오색어묵탕");
 
   @override
   Widget build(BuildContext context) {
