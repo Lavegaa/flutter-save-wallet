@@ -14,8 +14,8 @@ class ItemListView extends StatelessWidget {
   }) : super(key: key);
 
   //TODO : title넣기?...? final이라 안됨?
-  final Future<List<ProductModel>> products =
-      SearchRepository.getProductList("오색어묵탕");
+  late final Future<List<ProductModel>> products =
+      SearchRepository.getProductList('오색어묵탕');
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class ItemListView extends StatelessWidget {
                 const SizedBox(
                   height: 50,
                 ),
-                //Expanded(child: makeList(snapshot))
+                Expanded(child: makeList(snapshot))
               ],
             );
           }

@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class Product extends StatelessWidget {
-  final String title, price, image, link;
+  final dynamic title, price, image, link;
 
   const Product({
     super.key,
@@ -106,15 +106,15 @@ class Product extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               //가격비교
-              imgPrice < int.parse(price)
+              imgPrice < price
                   ? Text(
-                      price,
+                      price.toString(),
                       style: const TextStyle(fontSize: 22),
                     )
                   : Row(
                       children: [
                         Text(
-                          price,
+                          price.toString(),
                           style:
                               const TextStyle(fontSize: 22, color: Colors.red),
                         ),

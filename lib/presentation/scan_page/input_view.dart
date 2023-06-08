@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:savewallet/presentation/item_list_page/result_screen.dart';
+// import 'package:tflite/tflite.dart';
 import '../item_list_page/item_list_view.dart';
 
 class InputView extends StatefulWidget {
@@ -58,9 +61,40 @@ class _InputViewState extends State<InputView> {
 
   @override
   void initState() {
-    processImage(widget.image);
+    // processImage(widget.image);
     super.initState();
+    // loadModel().then((value) {
+    //   setState(() {});
+    // });
   }
+
+  // // 모델과 label.txt를 가져온다.
+  // loadModel() async {
+  //   await Tflite.loadModel(
+  //     // 모델 넣기
+  //     model: "assets/model_unquant.tflite",
+  //     // 이건 뭔지 모르겠네
+  //     labels: "assets/testlabel.txt",
+  //   ).then((value) {
+  //     setState(() {
+  //       //_loading = false;
+  //     });
+  //   });
+  // }
+
+  // 이미지 분류
+  // Future classifyImage(File image) async {
+  //   // 아래 잘 넣어보기
+  //   var output = await Tflite.runModelOnImage(
+  //       path: image.path,
+  //       imageMean: 0.0, // defaults to 117.0
+  //       imageStd: 255.0, // defaults to 1.0
+  //       numResults: 2, // defaults to 5
+  //       threshold: 0.2, // defaults to 0.1
+  //       asynch: true // defaults to true
+  //       );
+  //   setState(() {});
+  // }
 
   late final TextEditingController itemName = TextEditingController(text: "");
 
