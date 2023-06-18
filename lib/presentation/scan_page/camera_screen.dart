@@ -61,9 +61,10 @@ class _CameraScreenState extends State<CameraScreen> {
       final screenSize = MediaQuery.of(context).size;
       final appBarHeight = AppBar().preferredSize.height;
 
+      final statusBarHeight = MediaQuery.of(context).padding.top;
       final widthRatio = imageSize.width / screenSize.width;
-      final heightRatio = imageSize.height / (screenSize.height - appBarHeight);
-
+      final heightRatio = imageSize.height /
+          (screenSize.height - statusBarHeight - appBarHeight);
       final transformedRect = Rect.fromLTRB(
         rect.left * widthRatio,
         rect.top * heightRatio,
@@ -127,7 +128,10 @@ class _CameraScreenState extends State<CameraScreen> {
     final appBarHeight = AppBar().preferredSize.height;
 
     final rect = Rect.fromCenter(
-      center: Offset(size.width / 2, (size.height - appBarHeight) / 2),
+      center: Offset(
+        size.width / 2,
+        (size.height - appBarHeight - MediaQuery.of(context).padding.top) / 2,
+      ),
       width: _CameraScreenState.overlay_width, // 원하는 가운데 사각형의 너비
       height: _CameraScreenState.overlay_height, // 원하는 가운데 사각형의 높이
     );
