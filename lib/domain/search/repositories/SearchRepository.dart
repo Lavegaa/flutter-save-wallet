@@ -35,7 +35,7 @@ class SearchRepository {
       List<int> responseBodyBytes = response.bodyBytes;
       String responseBody = utf8.decode(responseBodyBytes);
       dynamic jsonData = jsonDecode(responseBody);
-      if (jsonData['statusCode'] == '200') {
+      if (response.statusCode == 200 && jsonData['statusCode'] == '200') {
         // dynamic jsonData = jsonDecode(response.body);
         dynamic productList = jsonData['data'];
         for (var product in productList) {
