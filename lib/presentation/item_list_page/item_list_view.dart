@@ -15,7 +15,7 @@ class ItemListView extends StatelessWidget {
 
   //TODO : title넣기?...? final이라 안됨?
   late final Future<List<ProductModel>> products =
-      SearchRepository.getProductList('오색어묵탕');
+      SearchRepository.getProductList(title);
 
   @override
   Widget build(BuildContext context) {

@@ -13,9 +13,9 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   //TODO - recognizedText title,price 받아오기
-  final TextEditingController title = TextEditingController(text: "오색어묵탕");
+  final TextEditingController title = TextEditingController(text: "");
   //이름
-  final TextEditingController price = TextEditingController(text: "8800");
+  final TextEditingController price = TextEditingController(text: "");
   //가격
   bool _isCheckTitle = true;
 
