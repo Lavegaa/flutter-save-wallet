@@ -49,10 +49,10 @@ class ItemListView extends StatelessWidget {
         future: products,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Column(
+            return Row(
               children: [
                 const SizedBox(
-                  height: 50,
+                  height: 10,
                 ),
                 Expanded(child: makeList(snapshot))
               ],
@@ -69,7 +69,7 @@ class ItemListView extends StatelessWidget {
 //TODO : 상품 나열
   ListView makeList(AsyncSnapshot<List<ProductModel>> snapshot) {
     return ListView.separated(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       itemCount: snapshot.data!.length,
       padding: const EdgeInsets.symmetric(
         vertical: 10,
@@ -85,7 +85,7 @@ class ItemListView extends StatelessWidget {
         );
       },
       separatorBuilder: (context, index) => const SizedBox(
-        width: 40,
+        width: 20,
       ),
     );
   }
