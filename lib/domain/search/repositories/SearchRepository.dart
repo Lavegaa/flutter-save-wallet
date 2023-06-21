@@ -35,6 +35,12 @@ class SearchRepository {
       List<int> responseBodyBytes = response.bodyBytes;
       String responseBody = utf8.decode(responseBodyBytes);
       dynamic jsonData = jsonDecode(responseBody);
+      /**
+       * NOTE:
+       * resposnse.statusCode - 우리서버
+       * jsonData['statusCode'] - naver서버
+       * 추후 상황에 따라 UI를 다르게 표기해줄 수 있을 것 같음.
+       */
       if (response.statusCode == 200 && jsonData['statusCode'] == '200') {
         // dynamic jsonData = jsonDecode(response.body);
         dynamic productList = jsonData['data'];

@@ -23,6 +23,8 @@ class _CameraScreenState extends State<CameraScreen> {
   late List<CameraDescription> cameras;
   static double overlay_width = 300;
   static double overlay_height = 200;
+  int imageId = 0;
+
   bool _isCameraInitialized = false;
   ImagePicker? _imagePicker;
   GlobalKey _previewContainerKey = GlobalKey();
@@ -51,6 +53,12 @@ class _CameraScreenState extends State<CameraScreen> {
 
     try {
       final XFile imageFile = await _controller.takePicture();
+      final String imagePath = (await getTemporaryDirectory()).path;
+      const String fileName = 'cropped_image';
+      final File prevCroppedFile = File('$imagePath/${fileName}_$imageId.jpg');
+      if (await prevCroppedFile.exists()) {
+        await prevCroppedFile.delete();
+      }
 
       final img.Image? capturedImage =
           img.decodeImage(File(imageFile.path).readAsBytesSync());
@@ -80,10 +88,9 @@ class _CameraScreenState extends State<CameraScreen> {
         height: transformedRect.height.toInt(),
       );
       // 자른 이미지를 파일로 저장
-      final String imagePath = (await getTemporaryDirectory()).path;
-      final String fileName = 'cropped_image.jpg'; // 파일 이름 지정
-      final File croppedFile = File('$imagePath/$fileName')
-        ..writeAsBytesSync(img.encodeJpg(croppedImage));
+      final File croppedFile = File('$imagePath/${fileName}_$imageId.jpg');
+      await croppedFile.writeAsBytes(img.encodeJpg(croppedImage!));
+      imageId += 1;
       print('이미지 캡처 성공: $croppedFile');
       return croppedFile;
     } catch (e) {
@@ -98,8 +105,15 @@ class _CameraScreenState extends State<CameraScreen> {
       if (isGallery) {
         image = await _imagePicker?.pickImage(source: ImageSource.gallery);
       } else {
-        print('capture start!!!!');
-        image = await _captureImage(rect);
+        if (!_controller.value.isInitialized) {
+          return;
+        }
+        final croppedFile = await _captureImage(rect);
+        if (croppedFile != null) {
+          image = XFile(croppedFile.path);
+        } else {
+          return;
+        }
       }
       final inputImage = InputImage.fromFilePath(image.path);
       Navigator.push(

@@ -13,14 +13,19 @@ class ResultView extends StatelessWidget {
         title: const Text('결과'),
       ),
       body: SafeArea(
-        child: Expanded(
-          flex: 1,
-          child: Image.file(
-            File(image),
-            // fit: BoxFit.fitWidth,
-            width: double.infinity,
-            height: double.infinity,
-          ),
+        child: Flex(
+          direction: Axis.vertical,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Image.file(
+                File(image),
+                // fit: BoxFit.fitWidth,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            )
+          ],
         ),
       ),
     );

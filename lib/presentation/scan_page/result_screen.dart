@@ -11,7 +11,8 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Column(
+          child: Flex(
+        direction: Axis.vertical,
         children: [
           Expanded(
             flex: 2,
