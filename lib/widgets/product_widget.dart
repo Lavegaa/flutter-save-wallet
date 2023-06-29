@@ -13,10 +13,10 @@ class Product extends StatelessWidget {
     required this.link,
   });
 
-  //TODO  : 사진찍은 가격도 필요?!
+  //TODO  : camera image의 가격 받아와서 비교하기
   static num imgPrice = 8000;
 
-  OnButtonTap() async {
+  onButtonTap() async {
     await launchUrlString(link);
   }
 
@@ -31,101 +31,106 @@ class Product extends StatelessWidget {
             style: BorderStyle.solid,
             width: 2),
       ),
-      child: Row(
-        children: [
-          Hero(
-            tag: title,
-            child: Container(
-              width: 70, //이미지 크기
+      child: Flexible(
+        fit: FlexFit.tight,
+        child: Row(
+          children: [
+            //상품 Image
+            Container(
+              width: 70,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Image.network(image),
             ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Row(
+            const SizedBox(
+              width: 10,
+            ),
+            SizedBox(
+              width: 250,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: OnButtonTap,
-                    child: Container(
-                      margin: const EdgeInsets.only(
-                        bottom: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade500,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 2,
-                          horizontal: 2,
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              "구매하기 ",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
+                  //상품 Title
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(
-                    width: 5,
+                    height: 5,
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  Row(
                     children: [
-                      //가격비교
-                      imgPrice < price
-                          ? Text(
-                              price.toString(),
-                              style: const TextStyle(fontSize: 22),
-                            )
-                          : Row(
+                      //구매하기 버튼
+                      GestureDetector(
+                        onTap: onButtonTap,
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                            bottom: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade500,
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(2),
+                            child: Row(
                               children: [
                                 Text(
-                                  price.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 22, color: Colors.red),
+                                  "구매하기 ",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                                const Icon(
-                                  Icons.arrow_downward_sharp,
-                                  size: 30,
-                                  color: Colors.red,
+                                Icon(
+                                  Icons.chevron_right_rounded,
+                                  color: Colors.white,
                                 ),
                               ],
                             ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //가격비교
+                          imgPrice < price
+                              ? Text(
+                                  price.toString(),
+                                  style: const TextStyle(fontSize: 22),
+                                )
+                              : Row(
+                                  children: [
+                                    Text(
+                                      price.toString(),
+                                      style: const TextStyle(
+                                          fontSize: 22, color: Colors.red),
+                                    ),
+                                    const Icon(
+                                      Icons.arrow_downward_sharp,
+                                      size: 30,
+                                      color: Colors.red,
+                                    ),
+                                  ],
+                                ),
+                        ],
+                      )
                     ],
                   )
                 ],
-              )
-            ],
-          ),
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
