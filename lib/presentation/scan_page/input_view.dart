@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:savewallet/presentation/item_list_page/result_screen.dart';
-// import 'package:tflite/tflite.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
 import '../item_list_page/item_list_view.dart';
 
 class InputView extends StatefulWidget {
@@ -138,29 +138,42 @@ class _InputViewState extends State<InputView> {
   }
 
   Future<void> processImage(InputImage inputImage) async {
-    if (!_canProcess) return;
-    if (_isBusy) return;
-    _isBusy = true;
-    setState(() {
-      _text = '';
-    });
-    final recognizedText = await _textRecognizer.processImage(inputImage);
+    tfTest(inputImage);
+    // if (!_canProcess) return;
+    // if (_isBusy) return;
+    // _isBusy = true;
+    // setState(() {
+    //   _text = '';
+    // });
+    // final recognizedText = await _textRecognizer.processImage(inputImage);
 
-    _text = 'Recognized text:\n\n${recognizedText.text}';
-    print('result:      ' + _text!);
-    List<String> textList = recognizedText.blocks.map((e) => e.text).toList();
-    print('textList:  ${textList}');
-    // tag추론
-    Map<String, dynamic> tag = estimateTag(textList);
-    // tag에 따라 상품명, 가격, 수량 추론
-    Map<String, dynamic> itemInfo = estimateItemInfo(textList, tag);
-    itemName.text = itemInfo['name'];
-    itemPrice.text = itemInfo['price'];
-    // 가격 추출
-    // List<String> priceList = detectPrice(textList);
-    _isBusy = false;
-    if (mounted) {
-      setState(() {});
+    // _text = 'Recognized text:\n\n${recognizedText.text}';
+    // print('result:      ' + _text!);
+    // List<String> textList = recognizedText.blocks.map((e) => e.text).toList();
+    // print('textList:  ${textList}');
+    // // tag추론
+    // Map<String, dynamic> tag = estimateTag(textList);
+    // // tag에 따라 상품명, 가격, 수량 추론
+    // Map<String, dynamic> itemInfo = estimateItemInfo(textList, tag);
+    // itemName.text = itemInfo['name'];
+    // itemPrice.text = itemInfo['price'];
+    // // 가격 추출
+    // // List<String> priceList = detectPrice(textList);
+    // _isBusy = false;
+    // if (mounted) {
+    //   setState(() {});
+    // }
+  }
+
+  Future<void> tfTest(InputImage inputImage) async {
+    try {
+      final interpreter =
+          await Interpreter.fromAsset('assets/sample_model.tflite');
+      var output = List.filled(1 * 2, 0).reshape([1, 2]);
+      interpreter.run(inputImage, output);
+      print(output);
+    } catch (e) {
+      print('error!!: ${e}');
     }
   }
 
