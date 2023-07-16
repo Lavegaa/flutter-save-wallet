@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../domain/search/repositories/SearchRepository.dart';
 import '../../model/product_model/product_model.dart';
 import '../../widgets/product_widget.dart';
@@ -68,6 +69,15 @@ class ItemListView extends StatelessWidget {
 
 //TODO : 상품 나열
   ListView makeList(AsyncSnapshot<List<ProductModel>> snapshot) {
+    String priceString = price;
+    var numberFormat = NumberFormat('#,###');
+    num imgPrice = 0;
+    try {
+      imgPrice = numberFormat.parse(priceString);
+      print(price); // 출력: 123123123
+    } catch (e) {
+      print('유효한 가격 형식이 아닙니다.');
+    }
     return ListView.separated(
       scrollDirection: Axis.vertical,
       itemCount: snapshot.data!.length,
@@ -82,6 +92,7 @@ class ItemListView extends StatelessWidget {
           price: product.price,
           image: product.image,
           link: product.link,
+          imgPrice: imgPrice,
         );
       },
       separatorBuilder: (context, index) => const SizedBox(

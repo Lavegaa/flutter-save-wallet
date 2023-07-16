@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class Product extends StatelessWidget {
-  final dynamic title, price, image, link;
+  final dynamic title, price, image, link, imgPrice;
 
   const Product({
     super.key,
@@ -11,10 +11,8 @@ class Product extends StatelessWidget {
     required this.price,
     required this.image,
     required this.link,
+    required this.imgPrice,
   });
-
-  //TODO  : camera image의 가격 받아와서 비교하기
-  static num imgPrice = 8000;
 
   onButtonTap() async {
     await launchUrlString(link);
@@ -103,7 +101,7 @@ class Product extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           //가격비교
-                          imgPrice < price
+                          imgPrice <= price
                               ? Text(
                                   price.toString(),
                                   style: const TextStyle(fontSize: 22),
