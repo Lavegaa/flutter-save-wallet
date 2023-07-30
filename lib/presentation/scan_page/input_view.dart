@@ -78,59 +78,100 @@ class _InputViewState extends State<InputView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
+      appBar: AppBar(
+        title: Text('TextRecognized Result'),
+      ),
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE3E3E3),
+              Color.fromARGB(255, 210, 254, 255),
+            ],
+          ),
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          // ignore: prefer_const_literals_to_create_immutables
-          child: Column(children: [
-            Checkbox(
-              value: _isCheckTitle,
-              onChanged: (value) {
-                setState(() {
-                  _isCheckTitle = value!;
-                });
-              },
-            ),
-            ItemListTextField(
-              textValue: itemName,
-              labelText: '상품명',
-            ),
-            Checkbox(
-              value: _isCheckPrice,
-              onChanged: (value) {
-                setState(() {
-                  _isCheckPrice = value!;
-                });
-              },
-            ),
-            ItemListTextField(
-              textValue: itemPrice,
-              labelText: '가격',
-            ),
-            ItemListTextField(
-              textValue: itemAmount,
-              labelText: '수량',
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            OutlinedButton(
-              clipBehavior: Clip.hardEdge,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ItemListView(
-                      title: _isCheckTitle ? itemName.text : "",
-                      price: _isCheckPrice ? itemPrice.text : "",
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            child: Column(children: [
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isCheckTitle,
+                    onChanged: (value) {
+                      setState(() {
+                        _isCheckTitle = value!;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: ItemListTextField(
+                      textValue: itemName,
+                      labelText: '상품명',
                     ),
                   ),
-                );
-              },
-              child: const Text("결과보기"),
-            )
-          ]),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isCheckPrice,
+                    onChanged: (value) {
+                      setState(() {
+                        _isCheckPrice = value!;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: ItemListTextField(
+                      textValue: itemPrice,
+                      labelText: '가격',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  Expanded(
+                    child: ItemListTextField(
+                      textValue: itemAmount,
+                      labelText: '수량',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              OutlinedButton(
+                clipBehavior: Clip.hardEdge,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ItemListView(
+                        title: _isCheckTitle ? itemName.text : "",
+                        price: _isCheckPrice ? itemPrice.text : "",
+                      ),
+                    ),
+                  );
+                },
+                child: const Text("결과보기"),
+              )
+            ]),
+          ),
         ),
       ),
     );
@@ -219,30 +260,25 @@ class ItemListTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 20),
-        TextField(
-          controller: textValue,
-          decoration: InputDecoration(
-            labelText: labelText,
-            hintText: 'Fix your Text',
-            labelStyle: TextStyle(color: Colors.redAccent),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              borderSide: BorderSide(width: 2, color: Colors.blueAccent),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              borderSide: BorderSide(width: 1, color: Colors.redAccent),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            ),
-          ),
-          keyboardType: TextInputType.text,
+    return TextField(
+      controller: textValue,
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: 'Fix your Text',
+        labelStyle: TextStyle(color: Colors.redAccent),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          borderSide: BorderSide(width: 2, color: Colors.blueAccent),
         ),
-      ],
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          borderSide: BorderSide(width: 1, color: Colors.redAccent),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+      ),
+      keyboardType: TextInputType.text,
     );
   }
 }
